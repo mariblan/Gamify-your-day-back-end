@@ -5,6 +5,9 @@ import {
   removeFromToday,
   addFavorite,
   removeFavorite,
+  setCurrentProgress,
+  addFailed,
+  addSuccess,
 } from "../controllers/userQueries.js";
 
 const userRouter = express.Router();
@@ -18,5 +21,10 @@ userRouter
   .route("/:id/todayList/:taskId")
   .put(addToToday)
   .delete(removeFromToday);
+userRouter.route("/:id/failed/:taskId").put(addFailed);
+//.delete(removeFavorite);
+userRouter.route("/:id/success/:taskId").put(addSuccess);
+//.delete(removeFavorite);
+userRouter.route("/:id/:progress").put(setCurrentProgress);
 
 export default userRouter;
