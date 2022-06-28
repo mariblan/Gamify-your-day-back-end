@@ -17,6 +17,50 @@ const getUser = async (req, res, next) => {
   }
 };
 
+const addToToday = async (req, res, next) => {
+  // Get the taskId and check the array for its presence. If there,
+  // delete from array, if not add to array. How to handle if array doesn't exist?
+  try {
+    const changeFavoriteArr = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      { $push: { todayList: req.params.taskId } },
+      { new: true }
+    )
+      .populate("todayList")
+      .populate("todayCompleted")
+      .populate("todaySuccess")
+      .populate("todayFailed")
+      .populate("favoriteList");
+    res.status(200).json(changeFavoriteArr);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removeFromToday = async (req, res, next) => {
+  // Get the taskId and check the array for its presence. If there,
+  // delete from array, if not add to array. How to handle if array doesn't exist?
+  try {
+    const changeFavoriteArr = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      { $pull: { todayList: req.params.taskId } },
+      { new: true }
+    )
+      .populate("todayList")
+      .populate("todayCompleted")
+      .populate("todaySuccess")
+      .populate("todayFailed")
+      .populate("favoriteList");
+    res.status(200).json(changeFavoriteArr);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addFavorite = async (req, res, next) => {
   // Get the taskId and check the array for its presence. If there,
   // delete from array, if not add to array. How to handle if array doesn't exist?
@@ -61,4 +105,4 @@ const removeFavorite = async (req, res, next) => {
   }
 };
 
-export { getUser, addFavorite, removeFavorite };
+export { getUser, addToToday, removeFromToday, addFavorite, removeFavorite };
