@@ -4,8 +4,10 @@ dbConnection();
 import cors from "cors";
 import express from "express";
 import sanitize from "express-mongo-sanitize";
+
 import taskRouter from "./routes/tasks.js";
 import userRouter from "./routes/user.js";
+import authRouter from "./routes/auth.js";
 
 // All of this has to be relocated in different files (for MVC)
 
@@ -21,6 +23,7 @@ app.use(sanitize({ allowDots: true, replaceWith: "_" }));
 
 app.use("/", taskRouter);
 app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 // Error handler, make this better later.
 app.use((err, req, res, next) => {
