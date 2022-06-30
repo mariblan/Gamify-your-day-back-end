@@ -7,7 +7,7 @@ const getUser = async (req, res, next) => {
       _id: req.params.id,
     })
       .populate("todayList")
-      .populate("todayCompleted")
+      // .populate("todayCompleted")
       .populate("todaySuccess")
       .populate("todayFailed")
       .populate("favoriteList");
@@ -18,42 +18,36 @@ const getUser = async (req, res, next) => {
 };
 
 const addToToday = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
-    const changeFavoriteArr = await UserCollection.findOneAndUpdate(
+    const changeTodayArr = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
       },
       { $push: { todayList: req.params.taskId } },
       { new: true }
     ).populate("todayList");
-    res.status(200).json(changeFavoriteArr);
+    res.status(200).json(changeTodayArr);
   } catch (error) {
     next(error);
   }
 };
 
 const removeFromToday = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
-    const changeFavoriteArr = await UserCollection.findOneAndUpdate(
+    const changeTodayArr = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
       },
       { $pull: { todayList: req.params.taskId } },
       { new: true }
     ).populate("todayList");
-    res.status(200).json(changeFavoriteArr);
+    res.status(200).json(changeTodayArr);
   } catch (error) {
     next(error);
   }
 };
 
 const addFavorite = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
     const changeFavoriteArr = await UserCollection.findOneAndUpdate(
       {
@@ -69,8 +63,6 @@ const addFavorite = async (req, res, next) => {
 };
 
 const removeFavorite = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
     const changeFavoriteArr = await UserCollection.findOneAndUpdate(
       {
@@ -86,8 +78,6 @@ const removeFavorite = async (req, res, next) => {
 };
 
 const setCurrentProgress = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
     const changeUserProgress = await UserCollection.findOneAndUpdate(
       {
@@ -103,21 +93,19 @@ const setCurrentProgress = async (req, res, next) => {
 };
 
 const addFailed = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
+    console.log(req.body);
     const changeFailedArr = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
       },
       {
         $push: {
-          todayFailed: req.params.taskId,
-          todayCompleted: req.params.taskId,
+          todayFailed: req.body,
         },
       },
       { returnDocument: "after" }
-    );
+    ).populate("todayFailed");
     res.status(200).json(changeFailedArr);
   } catch (error) {
     next(error);
@@ -125,8 +113,6 @@ const addFailed = async (req, res, next) => {
 };
 
 const addSuccess = async (req, res, next) => {
-  // Get the taskId and check the array for its presence. If there,
-  // delete from array, if not add to array. How to handle if array doesn't exist?
   try {
     const changeSuccessArr = await UserCollection.findOneAndUpdate(
       {
@@ -134,12 +120,11 @@ const addSuccess = async (req, res, next) => {
       },
       {
         $push: {
-          todaySuccess: req.params.taskId,
-          todayCompleted: req.params.taskId,
+          todaySuccess: req.body,
         },
       },
       { returnDocument: "after" }
-    );
+    ).populate("todaySuccess");
     res.status(200).json(changeSuccessArr);
   } catch (error) {
     next(error);
