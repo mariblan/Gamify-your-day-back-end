@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = Schema({
-  _id: Schema.Types.ObjectId,
   name: {
     type: String,
     required: [true, "Name is required"],
@@ -16,7 +15,11 @@ const userSchema = Schema({
     unique: true,
     match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
   },
-  password: { type: String, required: [true, "Password is required"] },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    select: false,
+  },
   progress: { type: Number, required: true, default: 0 },
   todayList: [{ type: mongoose.ObjectId, ref: "task" }],
   // todayCompleted: [{ type: mongoose.ObjectId, ref: "task" }],
