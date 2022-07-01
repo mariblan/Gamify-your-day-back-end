@@ -79,6 +79,7 @@ const removeFavorite = async (req, res, next) => {
 
 const setCurrentProgress = async (req, res, next) => {
   try {
+    console.log(req.params);
     const changeUserProgress = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
