@@ -14,7 +14,18 @@ import authRouter from "./routes/auth.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:3000" }));
+const corsWhiteList = [process.env.LOCALPATH, process.env.FRONTEND_URL];
+const corsOptions = {
+  origin: function (origin, cb) {
+    if (corsWhiteList.indexOf(origin) !== -1) {
+      cb(null, true);
+    } else {
+      cb(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 app.use(express.urlencoded());
 app.use(express.json());
 app.use(sanitize({ allowDots: true, replaceWith: "_" }));
