@@ -9,13 +9,10 @@ import {
   addFailed,
   addSuccess,
 } from "../controllers/userQueries.js";
-import verifyToken from "../middlewares/verifyToken.js";
 
 const userRouter = express.Router();
-// userRouter.use(verifyToken);
 
-userRouter.route("/:id").get(verifyToken, getUser);
-// userRouter.route("/:id").get(getUser);
+userRouter.route("/:id").get(getUser);
 userRouter
   .route("/:id/favorites/:taskId")
   .put(addFavorite)

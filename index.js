@@ -14,9 +14,7 @@ import authRouter from "./routes/auth.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
-//??? This doesn't work. how to set it up properly?
-// app.use(cors({ origin: "http://localhost:3000/" }));
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.urlencoded());
 app.use(express.json());
 app.use(sanitize({ allowDots: true, replaceWith: "_" }));
@@ -37,14 +35,11 @@ app.listen(port);
 
 Back end question section:
 
-1. How to set up cors to accept localhost:3000? Tried and it just blocks 
-requests =(
-2. Is the sanitization good? Documentation coves this as the basics for it
+1. Is the sanitization good? Documentation coves this as the basics for it
 but are there any better practices with this?
 
 Back end to dos:
 1. Go back to error handling and make it better. An error handler middleware is
 in place but needs more love.
-2. Split routes and functions appropriately (in different files/folders)!
 
 */
