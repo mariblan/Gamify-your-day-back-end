@@ -2,8 +2,6 @@ import UserCollection from "../models/user.js";
 
 const getUser = async (req, res, next) => {
   try {
-    // const getUser = await UserCollection.findOne({
-    // _id: req.params.id,
     const getUser = await UserCollection.findById(req.userId)
       .select("+password")
       .populate("todayList")
@@ -79,7 +77,6 @@ const removeFavorite = async (req, res, next) => {
 
 const setCurrentProgress = async (req, res, next) => {
   try {
-    console.log(req.params);
     const changeUserProgress = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
@@ -95,7 +92,6 @@ const setCurrentProgress = async (req, res, next) => {
 
 const addFailed = async (req, res, next) => {
   try {
-    console.log(req.body);
     const changeFailedArr = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
