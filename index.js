@@ -9,6 +9,8 @@ import taskRouter from "./routes/tasks.js";
 import userRouter from "./routes/user.js";
 import authRouter from "./routes/auth.js";
 
+// import errorController from "./controllers/errorController";
+
 // All of this has to be relocated in different files (for MVC)
 
 const app = express();
@@ -33,11 +35,16 @@ app.use(sanitize({ allowDots: true, replaceWith: "_" }));
 app.use("/", taskRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+//Testing using an error controller to send errors to the frontend.
+// app.use(errorController);
 
 // Error handler, make this better later.
 app.use((err, req, res, next) => {
   console.log(err.stack);
-  res.status(500).json({ error: err.message });
+  if (err.name === "ERR_NOT_USR") {
+    err.message = "We could not find you :C";
+  }
+  res.status(err.statusCode || 500).json({ error: err.message });
 });
 
 app.listen(port);

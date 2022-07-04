@@ -1,6 +1,7 @@
-import UserCollection from "../models/user.js";
 import bcrypt from "bcrypt";
+import UserCollection from "../models/user.js";
 import jwt from "jsonwebtoken";
+import ErrorResponse from "../utils/ErrorResponse.js";
 
 const registerUser = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ const registerUser = async (req, res, next) => {
     } = req;
 
     const found = await UserCollection.findOne({ email });
-    if (found) throw new Error("User already exists");
+    if (found) res.status(422).send({ error: "User already exists" });
 
     const hash = await bcrypt.hash(password, 5);
     const { _id } = await UserCollection.create({
@@ -32,9 +33,11 @@ const loginUser = async (req, res, next) => {
     } = req;
 
     const user = await UserCollection.findOne({ email }).select("+password");
-    if (!user) throw new Error("User doesn't exist");
+    if (!user)
+      throw new ErrorResponse("User doesn't exist", 404, "ERR_NOT_USR");
     const pwdMatch = await bcrypt.compare(password, user.password);
-    if (!pwdMatch) throw new Error("Password is not correct");
+    if (!pwdMatch) res.send({ error: "Password is not correct" });
+
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
     res.status(201).json({ token });
