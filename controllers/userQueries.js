@@ -10,6 +10,7 @@ const getUser = async (req, res, next) => {
       .populate("favoriteList");
     if (!getUser) throw new Error("User doesn't exist");
     res.status(200).json(getUser);
+    //res.status(200).send({errors})
   } catch (error) {
     next(error);
   }
@@ -75,6 +76,22 @@ const removeFavorite = async (req, res, next) => {
   }
 };
 
+const clearToday = async (req, res, next) => {
+  try {
+    const changeFailedArr = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $set: { todayList: [] },
+      }
+    );
+    res.status(200).json(changeFailedArr);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const setCurrentProgress = async (req, res, next) => {
   try {
     const changeUserProgress = await UserCollection.findOneAndUpdate(
@@ -84,6 +101,19 @@ const setCurrentProgress = async (req, res, next) => {
       { progress: req.params.progress },
       { returnDocument: "after" }
     );
+    res.status(200).json(changeUserProgress);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCompletedIds = async (req, res, next) => {
+  try {
+    const changeUserProgress = await UserCollection.findOne({
+      _id: req.params.id,
+    })
+      .select("todaySuccess")
+      .select("todayFailed");
     res.status(200).json(changeUserProgress);
   } catch (error) {
     next(error);
@@ -109,6 +139,22 @@ const addFailed = async (req, res, next) => {
   }
 };
 
+const clearFailed = async (req, res, next) => {
+  try {
+    const changeFailedArr = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $set: { todayFailed: [] },
+      }
+    );
+    res.status(200).json(changeFailedArr);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addSuccess = async (req, res, next) => {
   try {
     const changeSuccessArr = await UserCollection.findOneAndUpdate(
@@ -128,6 +174,22 @@ const addSuccess = async (req, res, next) => {
   }
 };
 
+const clearSuccess = async (req, res, next) => {
+  try {
+    const changeFailedArr = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $set: { todaySuccess: [] },
+      }
+    );
+    res.status(200).json(changeFailedArr);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getUser,
   addToToday,
@@ -135,6 +197,10 @@ export {
   addFavorite,
   removeFavorite,
   setCurrentProgress,
+  getCompletedIds,
+  clearToday,
   addFailed,
+  clearFailed,
   addSuccess,
+  clearSuccess,
 };

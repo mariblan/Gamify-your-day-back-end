@@ -6,7 +6,7 @@ const userSchema = Schema({
     type: String,
     required: [true, "Name is required"],
     match: /^[A-Za-z]+$/,
-    minlength: 6,
+    minlength: 2,
     maxlength: 20,
   },
   email: {
