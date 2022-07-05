@@ -7,7 +7,8 @@ import {
   removeFavorite,
   setCurrentProgress,
   clearToday,
-  getCompletedIds,
+  getCompleted,
+  clearCompleted,
   addFailed,
   clearFailed,
   addSuccess,
@@ -25,7 +26,7 @@ userRouter
   .route("/:id/todayList/:taskId")
   .put(addToToday)
   .delete(removeFromToday);
-userRouter.route("/:id/completed").get(getCompletedIds);
+userRouter.route("/:id/completed").get(getCompleted).delete(clearCompleted);
 userRouter.route("/:id/todayList").delete(clearToday);
 userRouter.route("/:id/failed/:taskId").put(addFailed);
 userRouter.route("/:id/failed").delete(clearFailed);

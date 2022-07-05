@@ -27,8 +27,8 @@ const corsOptions = {
   },
 };
 
-// app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
+// app.use(cors());
 app.use(express.json());
 app.use(sanitize({ allowDots: true, replaceWith: "_" }));
 
@@ -38,13 +38,16 @@ app.use("/auth", authRouter);
 //Testing using an error controller to send errors to the frontend.
 // app.use(errorController);
 
+const errorDictionary = ["ERR_USR_EXISTS", "ERR_NOT_USR", "ERR_NOT_PASSWORD"];
+
 // Error handler, make this better later.
 app.use((err, req, res, next) => {
   console.log(err.stack);
-  if (err.name === "ERR_NOT_USR") {
-    err.message = "We could not find you :C";
+  if (errorDictionary.includes(err.name)) {
+    // console.log(err.name);
+    // console.log(err.message);
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
-  res.status(err.statusCode || 500).json({ error: err.message });
 });
 
 app.listen(port);

@@ -8,7 +8,8 @@ const getUser = async (req, res, next) => {
       .populate("todaySuccess")
       .populate("todayFailed")
       .populate("favoriteList");
-    if (!getUser) throw new Error("User doesn't exist");
+    if (!getUser)
+      throw new ErrorResponse("User doesn't exist", 404, "ERR_NO_USR");
     res.status(200).json(getUser);
     //res.status(200).send({errors})
   } catch (error) {
@@ -38,6 +39,7 @@ const removeFromToday = async (req, res, next) => {
         _id: req.params.id,
       },
       { $pull: { todayList: req.params.taskId } },
+
       { new: true }
     ).populate("todayList");
     res.status(200).json(changeTodayArr);
@@ -78,7 +80,7 @@ const removeFavorite = async (req, res, next) => {
 
 const clearToday = async (req, res, next) => {
   try {
-    const changeFailedArr = await UserCollection.findOneAndUpdate(
+    const changeTodayArr = await UserCollection.findOneAndUpdate(
       {
         _id: req.params.id,
       },
@@ -86,7 +88,7 @@ const clearToday = async (req, res, next) => {
         $set: { todayList: [] },
       }
     );
-    res.status(200).json(changeFailedArr);
+    res.status(200).json(changeTodayArr);
   } catch (error) {
     next(error);
   }
@@ -107,14 +109,28 @@ const setCurrentProgress = async (req, res, next) => {
   }
 };
 
-const getCompletedIds = async (req, res, next) => {
+const getCompleted = async (req, res, next) => {
   try {
-    const changeUserProgress = await UserCollection.findOne({
+    const getCompletedTasks = await UserCollection.findOne({
       _id: req.params.id,
-    })
-      .select("todaySuccess")
-      .select("todayFailed");
-    res.status(200).json(changeUserProgress);
+    }).select("todayCompleted -_id");
+    res.status(200).json(getCompletedTasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const clearCompleted = async (req, res, next) => {
+  try {
+    const clearCompletedTasks = await UserCollection.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $set: { todayCompleted: [] },
+      }
+    );
+    res.status(200).json(clearCompletedTasks);
   } catch (error) {
     next(error);
   }
@@ -129,10 +145,13 @@ const addFailed = async (req, res, next) => {
       {
         $push: {
           todayFailed: req.body,
+          todayCompleted: req.body,
         },
       },
       { returnDocument: "after" }
-    ).populate("todayFailed");
+    )
+      .populate("todayFailed")
+      .populate("todayCompleted");
     res.status(200).json(changeFailedArr);
   } catch (error) {
     next(error);
@@ -156,6 +175,7 @@ const clearFailed = async (req, res, next) => {
 };
 
 const addSuccess = async (req, res, next) => {
+  console.log(req.body);
   try {
     const changeSuccessArr = await UserCollection.findOneAndUpdate(
       {
@@ -164,10 +184,13 @@ const addSuccess = async (req, res, next) => {
       {
         $push: {
           todaySuccess: req.body,
+          todayCompleted: req.body,
         },
       },
       { returnDocument: "after" }
-    ).populate("todaySuccess");
+    )
+      .populate("todaySuccess")
+      .populate("todayCompleted");
     res.status(200).json(changeSuccessArr);
   } catch (error) {
     next(error);
@@ -197,7 +220,8 @@ export {
   addFavorite,
   removeFavorite,
   setCurrentProgress,
-  getCompletedIds,
+  getCompleted,
+  clearCompleted,
   clearToday,
   addFailed,
   clearFailed,

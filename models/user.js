@@ -22,7 +22,18 @@ const userSchema = Schema({
   },
   progress: { type: Number, required: true, default: 0 },
   todayList: [{ type: mongoose.ObjectId, ref: "task" }],
-  // todayCompleted: [{ type: mongoose.ObjectId, ref: "task" }],
+  todayCompleted: [
+    {
+      type: mongoose.Mixed,
+      taskId: { type: String, required: true },
+      taskName: { type: String, required: true },
+      sliderValue: { type: Number, required: true },
+      difficulty: { type: String, required: true },
+      reward: { type: Number, required: true },
+      category: { type: String, required: true },
+      time: { type: String, required: true },
+    },
+  ],
   todaySuccess: [
     {
       type: mongoose.Mixed,
