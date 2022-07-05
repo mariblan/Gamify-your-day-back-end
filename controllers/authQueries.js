@@ -10,7 +10,8 @@ const registerUser = async (req, res, next) => {
     } = req;
 
     const found = await UserCollection.findOne({ email });
-    if (found) res.status(422).send({ error: "User already exists" });
+    if (found)
+      throw new ErrorResponse("User already exists", 409, "ERR_USR_EXISTS");
 
     const hash = await bcrypt.hash(password, 5);
     const { _id } = await UserCollection.create({
@@ -36,7 +37,12 @@ const loginUser = async (req, res, next) => {
     if (!user)
       throw new ErrorResponse("User doesn't exist", 404, "ERR_NOT_USR");
     const pwdMatch = await bcrypt.compare(password, user.password);
-    if (!pwdMatch) res.send({ error: "Password is not correct" });
+    if (!pwdMatch)
+      throw new ErrorResponse(
+        "Password is not correct",
+        401,
+        "ERR_NOT_PASSWORD"
+      );
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
