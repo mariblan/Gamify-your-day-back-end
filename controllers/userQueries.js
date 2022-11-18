@@ -1,17 +1,17 @@
-import UserCollection from "../models/user.js";
+import UserCollection from '../models/user.js';
+import ErrorResponse from '../utils/ErrorResponse.js';
 
 const getUser = async (req, res, next) => {
   try {
     const getUser = await UserCollection.findById(req.userId)
-      .select("+password")
-      .populate("todayList")
-      .populate("todaySuccess")
-      .populate("todayFailed")
-      .populate("favoriteList");
+      .select('+password')
+      .populate('todayList')
+      .populate('todaySuccess')
+      .populate('todayFailed')
+      .populate('favoriteList');
     if (!getUser)
-      throw new ErrorResponse("User doesn't exist", 404, "ERR_NO_USR");
-    res.status(200).json(getUser);
-    //res.status(200).send({errors})
+      throw new ErrorResponse("User doesn't exist", 404, 'ERR_NO_USR');
+    return res.json(getUser);
   } catch (error) {
     next(error);
   }
@@ -25,7 +25,7 @@ const addToToday = async (req, res, next) => {
       },
       { $push: { todayList: req.params.taskId } },
       { new: true }
-    ).populate("todayList");
+    ).populate('todayList');
     res.status(200).json(changeTodayArr);
   } catch (error) {
     next(error);
@@ -41,7 +41,7 @@ const removeFromToday = async (req, res, next) => {
       { $pull: { todayList: req.params.taskId } },
 
       { new: true }
-    ).populate("todayList");
+    ).populate('todayList');
     res.status(200).json(changeTodayArr);
   } catch (error) {
     next(error);
@@ -55,8 +55,8 @@ const addFavorite = async (req, res, next) => {
         _id: req.params.id,
       },
       { $push: { favoriteList: req.params.taskId } },
-      { returnDocument: "after" }
-    ).populate("favoriteList");
+      { returnDocument: 'after' }
+    ).populate('favoriteList');
     res.status(200).json(changeFavoriteArr);
   } catch (error) {
     next(error);
@@ -70,8 +70,8 @@ const removeFavorite = async (req, res, next) => {
         _id: req.params.id,
       },
       { $pull: { favoriteList: req.params.taskId } },
-      { returnDocument: "after" }
-    ).populate("favoriteList");
+      { returnDocument: 'after' }
+    ).populate('favoriteList');
     res.status(200).json(changeFavoriteArr);
   } catch (error) {
     next(error);
@@ -101,7 +101,7 @@ const setCurrentProgress = async (req, res, next) => {
         _id: req.params.id,
       },
       { progress: req.params.progress },
-      { returnDocument: "after" }
+      { returnDocument: 'after' }
     );
     res.status(200).json(changeUserProgress);
   } catch (error) {
@@ -113,7 +113,7 @@ const getCompleted = async (req, res, next) => {
   try {
     const getCompletedTasks = await UserCollection.findOne({
       _id: req.params.id,
-    }).select("todayCompleted -_id");
+    }).select('todayCompleted -_id');
     res.status(200).json(getCompletedTasks);
   } catch (error) {
     next(error);
@@ -148,10 +148,10 @@ const addFailed = async (req, res, next) => {
           todayCompleted: req.body,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: 'after' }
     )
-      .populate("todayFailed")
-      .populate("todayCompleted");
+      .populate('todayFailed')
+      .populate('todayCompleted');
     res.status(200).json(changeFailedArr);
   } catch (error) {
     next(error);
@@ -175,7 +175,6 @@ const clearFailed = async (req, res, next) => {
 };
 
 const addSuccess = async (req, res, next) => {
-  console.log(req.body);
   try {
     const changeSuccessArr = await UserCollection.findOneAndUpdate(
       {
@@ -187,10 +186,10 @@ const addSuccess = async (req, res, next) => {
           todayCompleted: req.body,
         },
       },
-      { returnDocument: "after" }
+      { returnDocument: 'after' }
     )
-      .populate("todaySuccess")
-      .populate("todayCompleted");
+      .populate('todaySuccess')
+      .populate('todayCompleted');
     res.status(200).json(changeSuccessArr);
   } catch (error) {
     next(error);
